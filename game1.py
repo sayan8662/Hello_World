@@ -6,15 +6,15 @@ pygame.init()
 
 width = 500
 height = 500
-RED= (251,13,72)													# color with it's R G B value
-GREEN = (70,251,147)												# color with it's R G B value
-BLACK = (0,0,0)														# color with it's R G B value
-YELLOW = (255, 255, 0)												# color with it's R G B value
+RED= (251,13,72)									# color with it's R G B value
+GREEN = (70,251,147)									# color with it's R G B value
+BLACK = (0,0,0)										# color with it's R G B value
+YELLOW = (255, 255, 0)									# color with it's R G B value
 
-player_size = 25													# can change PLAYER SIZE later
+player_size = 25									# can change PLAYER SIZE later
 player_pos = [width/2, height-1.5*player_size]
 
-obstacle_size = 25													# can change the  OBSTACLE SIZE  later
+obstacle_size = 25									# can change the  OBSTACLE SIZE  later
 obstacle_pos = [random.randint(0, width - obstacle_size), 0]
 obstacle_list = [obstacle_pos]
 
@@ -32,7 +32,7 @@ background_image = pygame.image.load("square.jpg").convert()				# adding BACKGRO
 
 myFont = pygame.font.SysFont("monospace", 20)						# creating font for the SCORE
 
-def set_level(score, SPEED):										# addition of LEVEL
+def set_level(score, SPEED):								# addition of LEVEL
 	if score < 50:
 		SPEED = 20
 
@@ -69,7 +69,8 @@ def drop_obstacles(obstacle_list):
 
 def draw_obstacles(obstacle_list):
 	for obstacle_pos in obstacle_list:
-		pygame.draw.rect(screen, GREEN, (obstacle_pos[0], obstacle_pos[1], obstacle_size, obstacle_size ))	#  can create any SHAPE latter
+		pygame.draw.rect(screen, GREEN, (obstacle_pos[0], obstacle_pos[1], obstacle_size, obstacle_size ))	
+											#  can create any SHAPE latter
 
 def update_obstacle_positions(obstacle_list, score):
 	for idx, obstacle_pos in enumerate(obstacle_list):				# UPDATING the OBSTACLE position
@@ -96,19 +97,40 @@ def detect_collision(player_pos, obstacle_pos):						# detects the COLLISION wit
 	obstacle_y = obstacle_pos[1]
 
 	if (obstacle_x >= p_x and obstacle_x < (p_x + player_size)) or (p_x >= obstacle_x and p_x < (obstacle_x + player_size)) :
-															# ( LOGIC for COLLISION in X axis )
+											# ( LOGIC for COLLISION in X axis )
 
 		if(obstacle_y >= p_y and obstacle_y < (p_y + player_size)) or (p_y >= obstacle_y and p_y < (obstacle_y + player_size)) :
-															# ( LOGIC for COLLISION in Y axis )
+											# ( LOGIC for COLLISION in Y axis )
 			return True
 
 	return False		
 
+def my_text_objects(text, font):							#  ( UPDATE 1 )
+	text_surface = font.render(text, True, BLACK)
+	return text_surface, text_surface.get_rect()
 
-game_over = False											#  initializing GAME OVER condition
 
 
+def message_display(my_text):								#  ( UPDATE 1 )
+	PopUpText = pygame.font.SysFont("freesansbold.ttf", 90)
+	my_text_surf, my_text_rect = my_text_objects(my_text, PopUpText)
+	my_text_rect.center = ((width/2), (height/2))
+	screen.blit(my_text_surf, my_text_rect) 
+
+	pygame.display.update()
+
+	time.sleep(2)				                                    
+
+
+def crash():										# ( UPDATE 1 )
+	message_display(" GAME OVER !!! ")
+	
+	
+	
 #------------- MAIN PROGRAM LOOP ----------------
+
+game_over = False									#  initializing GAME OVER condition
+
 while not game_over:
 
 	for event in pygame.event.get():
@@ -120,16 +142,16 @@ while not game_over:
 			x = player_pos[0]
 			y = player_pos[1]
 
-			if event.key == pygame.K_LEFT :					#  will try to make the player move by holding the ARROW KEY 
+			if event.key == pygame.K_LEFT :			#  will try to make the player move by holding the ARROW KEY 
 				x -= player_size                        
 
-			elif event.key == pygame.K_RIGHT :				#							"
+			elif event.key == pygame.K_RIGHT :		#				"
 				x += player_size						
 
-			#elif event.key == pygame.K_UP :				#							"
+			#elif event.key == pygame.K_UP :		#				"
 			#	y -= player_size
 
-			#elif event.key == pygame.K_DOWN :				#							"
+			#elif event.key == pygame.K_DOWN :		#				"
 			#	y += player_size
  
 			player_pos = [x,y]		
@@ -138,22 +160,22 @@ while not game_over:
 
 	screen.blit(background_image, [0, 0])
 		
-	drop_obstacles(obstacle_list)								# calling of the DROP_OBSTACLE function
-	score = update_obstacle_positions(obstacle_list, score)		# calling of the UPDATE_OBSTACLE_POSITIONS functions
-	SPEED = set_level(score, SPEED)								# calling of the SET_LEVEL function
+	drop_obstacles(obstacle_list)						# calling of the DROP_OBSTACLE function
+	score = update_obstacle_positions(obstacle_list, score)			# calling of the UPDATE_OBSTACLE_POSITIONS functions
+	SPEED = set_level(score, SPEED)						# calling of the SET_LEVEL function
 	
 	text = "Score :" + str(score)
 	label = myFont.render(text, 1 , YELLOW)
-	screen.blit(label, (width-150, height-40))					# can CHANGE the SCORE msg LATER
+	screen.blit(label, (width-150, height-40))				# can CHANGE the SCORE msg LATER
 
 	if collision_check(obstacle_list, player_pos):
-		game_over = True
+		crash()
 		
 		
 
 	draw_obstacles(obstacle_list)
 	pygame.draw.rect(screen, RED, (player_pos[0], player_pos[1], player_size, player_size)) 	
-																# can create any SHAPE of the PLAYER latter
+										# can create any SHAPE of the PLAYER latter
 
 	clock.tick(10)
 
